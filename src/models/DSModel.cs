@@ -38,7 +38,7 @@ namespace dsevents
             case Mode.Concurrent:
                 return GetConcurrent(eventID);
             default:
-                throw new System.Exception("");
+                return null;
             }
         }
 
@@ -47,7 +47,7 @@ namespace dsevents
             Event _event = GetEvent(eventID);
 
             ISet<string> past = new SortedSet<string>();
-            FindPast(_event, past);
+            FillPastEvents(_event, past);
 
             return past;
         }
@@ -57,7 +57,7 @@ namespace dsevents
             Event analyzableEvent = GetEvent(eventID);
 
             ISet<string> future = new SortedSet<string>();
-            FindFuture(analyzableEvent, future);
+            FillFutureEvents(analyzableEvent, future);
 
             return future;
         }
@@ -67,13 +67,13 @@ namespace dsevents
             Event _event = GetEvent(eventID);
 
             ISet<string> past = new SortedSet<string>();
-            FindPast(_event, past);
+            FillPastEvents(_event, past);
 
             ISet<string> future = new SortedSet<string>();
-            FindFuture(_event, future);
+            FillFutureEvents(_event, future);
 
             ISet<string> concurrent = new SortedSet<string>();
-            FindConcurrent(_event, past, future, concurrent);
+            FillConcurrentEvents(_event, past, future, concurrent);
 
             return concurrent;
         }
@@ -93,15 +93,15 @@ namespace dsevents
             return null;
         }
 
-        private void FindPast(Event _event, ISet<string> past)
+        private void FillPastEvents(Event _event, ISet<string> pastEvents)
         {
             if (_event.Seq > 1)
             {
                 Event pastEvent = _processes[_event.ProcessID][_event.Seq - 2];
-                if (!past.Contains(pastEvent.ID))
+                if (!pastEvents.Contains(pastEvent.ID))
                 {
-                    past.Add(pastEvent.ID);
-                    FindPast(pastEvent, past);
+                    pastEvents.Add(pastEvent.ID);
+                    FillPastEvents(pastEvent, pastEvents);
                 }
             }
 
@@ -112,25 +112,25 @@ namespace dsevents
                 {
                     foreach (Event e in _processes[channel.From])
                     {
-                        if (e.ChannelID == channel.ID && !past.Contains(e.ID))
+                        if (e.ChannelID == channel.ID && !pastEvents.Contains(e.ID))
                         {
-                            past.Add(e.ID);
-                            FindPast(e, past);
+                            pastEvents.Add(e.ID);
+                            FillPastEvents(e, pastEvents);
                         }
                     }
                 }
             }
         }
 
-        private void FindFuture(Event _event, ISet<string> future)
+        private void FillFutureEvents(Event _event, ISet<string> futureEvents)
         {
             if (_event.Seq < _processes[_event.ProcessID].Count)
             {
                 Event futureEvent = _processes[_event.ProcessID][_event.Seq];
-                if (!future.Contains(futureEvent.ID))
+                if (!futureEvents.Contains(futureEvent.ID))
                 {
-                    future.Add(futureEvent.ID);
-                    FindFuture(futureEvent, future);
+                    futureEvents.Add(futureEvent.ID);
+                    FillFutureEvents(futureEvent, futureEvents);
                 }
             }
 
@@ -141,25 +141,25 @@ namespace dsevents
                 {
                     foreach (Event e in _processes[channel.To])
                     {
-                        if (e.ChannelID == channel.ID && !future.Contains(e.ID))
+                        if (e.ChannelID == channel.ID && !futureEvents.Contains(e.ID))
                         {
-                            future.Add(e.ID);
-                            FindFuture(e, future);
+                            futureEvents.Add(e.ID);
+                            FillFutureEvents(e, futureEvents);
                         }
                     }
                 }
             }
         }
 
-        private void FindConcurrent(Event _event, ISet<string> past, ISet<string> future, ISet<string> concurrent)
+        private void FillConcurrentEvents(Event _event, ISet<string> pastEvents, ISet<string> futureEvents, ISet<string> concurrentEvents)
         {
             foreach (var process in _processes)
             {
                 foreach (Event e in process.Value)
                 {
-                    if (e.ID != _event.ID && !past.Contains(e.ID) && !future.Contains(e.ID))
+                    if (e.ID != _event.ID && !pastEvents.Contains(e.ID) && !futureEvents.Contains(e.ID))
                     {
-                        concurrent.Add(e.ID);
+                        concurrentEvents.Add(e.ID);
                     }
                 }
             }
