@@ -5,15 +5,11 @@ namespace dsevents
 {
     class FileWriter
     {
-        public static void PrintEventIDs(Dictionary<string, ISet<string>> eventIDsMap)
+        public static void PrintEvents(ISet<string> eventIDs)
         {
-            foreach (var eventIDs in eventIDsMap)
+            foreach (string eventID in eventIDs)
             {
-                Console.WriteLine(eventIDs.Key + ":");
-                foreach (string eventID in eventIDs.Value)
-                {
-                    Console.WriteLine("--" + eventID);
-                }
+                Console.WriteLine(eventID);
             }
         }
     }

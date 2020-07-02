@@ -24,10 +24,10 @@ namespace dsevents
                 mode = Mode.Concurrent;
             }
 
-            List<string> eventIDs = ParseEventIDs(args);
-            Dictionary<string, ISet<string>> eventsMap = dSModel.GetEventsMap(eventIDs, mode); 
+            string eventID = args[1];
+            ISet<string> events = dSModel.GetEvents(eventID, mode);
 
-            FileWriter.PrintEventIDs(eventsMap);
+            FileWriter.PrintEvents(events);
         }
 
         private static DSModel GetDSModel(JsonModel jsonModel)
@@ -65,13 +65,6 @@ namespace dsevents
             }
 
             return dSModel;
-        }
-
-        private static List<string> ParseEventIDs(string[] args)
-        {
-            List<string> eventIDs = new List<string>(args);
-            eventIDs.RemoveAt(0);
-            return eventIDs;
         }
     }
 }
