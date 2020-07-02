@@ -27,7 +27,7 @@ namespace dsevents
             List<string> eventIDs = ParseEventIDs(args);
             Dictionary<string, ISet<string>> eventsMap = dSModel.GetEventsMap(eventIDs, mode); 
 
-            FileWriter.PrintEventIDs(mode, eventsMap);
+            FileWriter.PrintEventIDs(eventsMap);
         }
 
         private static DSModel GetDSModel(JsonModel jsonModel)
@@ -44,20 +44,21 @@ namespace dsevents
                 dSModel.AddProcess(process);
             }
 
+            bool addEventFlag = false;
             while (true)
             {
-                bool added = false;
+                addEventFlag = false;
                 foreach (Event e in jsonModel.Events)
                 {
                     string processID = e.ProcessID;
                     if (dSModel.GetProcessEventsCount(processID) + 1 == e.Seq)
                     {
                         dSModel.AddEvent(processID, e);
-                        added = true;
+                        addEventFlag = true;
                     }
                 }
 
-                if (!added)
+                if (!addEventFlag)
                 {
                     break;
                 }

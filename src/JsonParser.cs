@@ -7,20 +7,20 @@ namespace dsevents
     {
         public static JsonModel ParseJsonModel()
         {
-            string input = "";
+            string inputString = "";
             while (true)
             {
                 string line = Console.ReadLine();
                 if (line != null)
                 {
-                    input += line;
+                    inputString += line;
                 }
                 else
                 {
                     break;
                 }
             }
-            return JsonSerializer.Deserialize<JsonModel>(input);
+            return JsonSerializer.Deserialize<JsonModel>(inputString);
         }
     }
 }

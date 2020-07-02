@@ -45,6 +45,7 @@ namespace dsevents
         private Dictionary<string, ISet<string>> GetPast(List<string> eventIDs)
         {
             var pastEventIDs = new Dictionary<string, ISet<string>>();
+            
             for (int i = 0; i < eventIDs.Count; i++)
             {
                 Event analyzableEvent = GetEvent(eventIDs[i]);
