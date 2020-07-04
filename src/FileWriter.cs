@@ -9,8 +9,9 @@ namespace dsevents
         {
             foreach (string eventID in eventIDs)
             {
-                Console.WriteLine(eventID);
+                Console.Write(eventID + ' ');
             }
+            Console.WriteLine();
         }
     }
 }
